@@ -24,9 +24,17 @@ export class ProductService {
   getProducts(pageRequest?: PageRequest): Observable<PageResponse<Product>> {
     let params = new HttpParams();
     if (pageRequest) {
-      params = params.set('page', pageRequest.page.toString());
-      params = params.set('size', pageRequest.size.toString());
+      params = params.set('page', pageRequest.page.toString())
+                    .set('size', pageRequest.size.toString())
+                    .set('sort', 'id,desc');
     }
+
+    console.log('Requesting products with params:', {
+      page: params.get('page'),
+      size: params.get('size'),
+      sort: params.get('sort')
+    });
+
     return this.http.get<PageResponse<Product>>(`${this.apiUrl}/products`, { 
       headers: this.headers,
       params 

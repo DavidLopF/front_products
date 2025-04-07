@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product.model';
 import { PageResponse } from '../../models/page-response.model';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-update-product',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
+  providers: [ProductService],
   template: `
     <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
       <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">

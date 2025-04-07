@@ -65,7 +65,7 @@ import { PageResponse } from '../../models/page-response.model';
           <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
             <button 
               type="button"
-              (click)="onDelete()"
+              (click)="onConfirmDelete()"
               [disabled]="!selectedProductId || isLoading"
               class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto disabled:bg-red-300 disabled:cursor-not-allowed">
               @if (isLoading) {
@@ -99,6 +99,7 @@ export class DeleteProductComponent implements OnInit {
   selectedProductId: string = '';
   isLoading = false;
   error: string | null = null;
+  showSuccessAlert = false;
 
   constructor(private productService: ProductService) {}
 
@@ -121,23 +122,29 @@ export class DeleteProductComponent implements OnInit {
     });
   }
 
-  onDelete() {
-    if (!this.selectedProductId) return;
-    
-    this.isLoading = true;
-    this.error = null;
-    
-    this.productService.deleteProduct(Number(this.selectedProductId)).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.deleted.emit();
-      },
-      error: (err) => {
-        console.error('Error al eliminar producto:', err);
-        this.error = 'Error al eliminar el producto';
-        this.isLoading = false;
-      }
-    });
+  onConfirmDelete() {
+    if (!this.isLoading) {
+      this.isLoading = true;
+      this.error = null;
+
+      this.productService.deleteProduct(Number(this.selectedProductId)).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.showSuccessAlert = true;
+          
+          // Esperar que se muestre el mensaje de éxito y luego recargar
+          setTimeout(() => {
+            this.deleted.emit();
+            window.location.reload(); // Forzar recarga de la página
+          }, 2000);
+        },
+        error: (error) => {
+          console.error('Error al eliminar el producto:', error);
+          this.isLoading = false;
+          this.error = 'Error al eliminar el producto. Por favor, intente de nuevo.';
+        }
+      });
+    }
   }
 
   onCancel() {
